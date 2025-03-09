@@ -33,7 +33,7 @@ export class MemStorage implements IStorage {
       name: "Justine Michael M. Tabor",
       role: "Digital Artist & Photographer",
       bio: "Digital artist and photographer showcasing innovative projects and captivating photography.",
-      imageUrl: "/placeholder-photo.jpg"
+      imageUrl: "/assets/images/portfolio-photo.jpg.png"
     });
     this.createCreator({
       name: "Second Creator",
