@@ -56,25 +56,34 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // ALWAYS serve the app on port 5000
-  // this serves both the API and the client
-  const port = process.env.PORT || 5000;
-  const tryListen = (retryPort: number) => {
-    server.listen({
-      port: retryPort,
-      host: "0.0.0.0",
-      reusePort: true,
-    }, () => {
-      log(`serving on port ${retryPort}`);
-    }).on('error', (err: any) => {
-      if (err.code === 'EADDRINUSE' && retryPort < 5010) {
-        // Try the next port
-        log(`Port ${retryPort} in use, trying ${retryPort + 1}`);
-        tryListen(retryPort + 1);
-      } else {
-        throw err;
-      }
-    });
+  // Try to serve the app on an available port
+  const port = process.env.PORT || 3000; // Using 3000 as default instead of 5000
+  
+  server.listen({
+    port: Number(port),
+    host: "0.0.0.0",
+    reusePort: true,
+  }, () => {
+    log(`Server successfully started on port ${port}`);
+  }).on('error', (err: any) => {
+    if (err.code === 'EADDRINUSE') {
+      // If port is in use, try another port
+      const newPort = Number(port) + 1;
+      log(`Port ${port} is in use, trying port ${newPort}...`);
+      
+      server.listen({
+        port: newPort,
+        host: "0.0.0.0",
+        reusePort: true,
+      }, () => {
+        log(`Server successfully started on port ${newPort}`);
+      });
+    } else {
+      console.error('Server error:', err);
+      throw err;
+    }
+  });
+})();
   };
   
   tryListen(Number(port));
